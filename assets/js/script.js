@@ -4,12 +4,17 @@
 //on save btn write to local storage
 //on load put date on jumbotron
 // set interval to check time.  Color blocks that in the past grey.  Color future blocks gree,  Color actve red. 
+
+
 var tasks =[];
+var today = '';
+var dayStart =8;
+var dayStop =17;
 
 var loadTasks = function(){
     var tempdata =JSON.parse(localStorage.getItem('tasks'));
     
-    if (tempdata != null){
+    if (tempdata !== null){
         
         tasks = tempdata.slice();
         
@@ -19,9 +24,9 @@ var loadTasks = function(){
         }
     }
 }
-var saveTasks = function() {
-    var taskTime = correctA.toString();
-    var taskText = document.getElementById('savebox').value;
+var saveTasks = function(time,ttext) {
+    var taskTime = time.toString();
+    var taskText = ttext;
     var newItem ={
         time: taskTime,
         tasks:taskText
@@ -32,42 +37,76 @@ var saveTasks = function() {
 
 }
 
-var today = '';
+
 
 var updateDay = function(){
     var today = moment().format("dddd MMMM Do gggg"); 
     $('#currentDay').text(today);
-    console.log(today);
+    
 }
 
 var colorRows = function(){
-    var thisHour = moment().format("H");
-    for (i=8;i<=17;i++){
-        var rowNum = i.toString().trim(); 
+    var thisHour = moment().format("H"); //gets the hour which is a char
+    for (i=1;i<=24;i++){
+        var rowNum = i.toString().trim(); //converts I to a char
         
-        hourNum =parseInt(thisHour);
+        hourNum =parseInt(thisHour); //converts the hour to a number
         var whatIsIt = $('#'+rowNum).html()
-        
-        if (hourNum > i){
-            console.log (hourNum, i);
+       if (i<dayStart || i>dayStop) {
+        $('#'+rowNum).addClass('hide');
+
+       }
+       if (hourNum > i){ //compares the hournum which is now a number to i.  i is used to select the row. 
+            
             $('#'+rowNum).addClass('past');
+            $('#'+rowNum).removeClass('present');
+            $('#'+rowNum).removeClass('future');
         };
         if (hourNum == i){
             $('#'+rowNum).addClass('present');
-        };
-        if (thisHour < rowNum){
-            $('#'+rowNum).addClass('future');
+            $('#'+rowNum).removeClass('past');
+            $('#'+rowNum).removeClass('future');
+        }; 
+        if (hourNum < i){
 
-        };
-
+        }
+        
     }
 }
 
 
 setInterval(function() {
     colorRows();
-  }, (1000 * 60) * 5);
+  }, (1000 * 60) * 30);
 
+$('.saveBtn').on('click', function(){
+    //replace text area with p containing text area
+
+    //save to tasks array 
+    //save to local storage
+    var targetDiv =$(this).parent().children('.col-10').attr('id');
+    var targetText =$('#'+targetDiv).children('.userTask').val();
+    console.log ($('#'+targetDiv).children().is('.userTask'));
+    //if target element is a text area save it and convert to p
+    if ($('#'+targetDiv).children().is('.userTask')){
+        $('#'+targetDiv).html('<p>'+ targetText +'</p>');
+        saveTasks(targetDiv,targetText);
+    console.log(tasks);
+    }
+    else {
+        alert('No changes to save.')
+    }
+
+})
+
+$(".container").on("click",'.col-10',  function() {
+    
+    var oldtask = $(this).children('p').text();
+    var textH = "<textarea  class ='userTask' rows='4' cols='50'>" + oldtask + "</textarea>";
+    $(this).html(textH);
+    $(this).find('.userTask').focus();
+  
+  });
 
 colorRows();
 updateDay();
