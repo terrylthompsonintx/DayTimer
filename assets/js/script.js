@@ -25,13 +25,14 @@ var loadTasks = function(){
     }
 }
 var saveTasks = function(time,ttext) {
-    var taskTime = time.toString();
+    var taskTime = time;
     var taskText = ttext;
     var newItem ={
         time: taskTime,
         tasks:taskText
     }
     tasks.push(newItem);
+    console.log (tasks);
 
     localStorage.setItem('tasks',JSON.stringify(tasks));
 
@@ -51,26 +52,45 @@ var colorRows = function(){
         var rowNum = i.toString().trim(); //converts I to a char
         
         hourNum =parseInt(thisHour); //converts the hour to a number
-        var whatIsIt = $('#'+rowNum).html()
-       if (i<dayStart || i>dayStop) {
-        $('#'+rowNum).addClass('hide');
+        if (i<dayStart || i>dayStop){
+            
+            $('#'+rowNum).closest('.time-block').addClass('hide');
+            
+        }
 
-       }
+       
        if (hourNum > i){ //compares the hournum which is now a number to i.  i is used to select the row. 
             
             $('#'+rowNum).addClass('past');
             $('#'+rowNum).removeClass('present');
             $('#'+rowNum).removeClass('future');
+           
         };
         if (hourNum == i){
             $('#'+rowNum).addClass('present');
             $('#'+rowNum).removeClass('past');
             $('#'+rowNum).removeClass('future');
+           
         }; 
-        if (hourNum < i){
+        
+        
+    }
+}
+
+var loadTasks = function(){
+    
+    var tasks =JSON.parse(localStorage.getItem('tasks'));
+    if (tasks !== null){
+        //console.log('tasks', tasks)
+        for (x=0;x<tasks.length;x++){
+            
+            storedTime = tasks[x].time;
+            storedTask = tasks[x].tasks;
+            
+
+            $('#'+storedTime).children('.oldTask').append(storedTask);
 
         }
-        
     }
 }
 
@@ -86,7 +106,7 @@ $('.saveBtn').on('click', function(){
     //save to local storage
     var targetDiv =$(this).parent().children('.col-10').attr('id');
     var targetText =$('#'+targetDiv).children('.userTask').val();
-    console.log ($('#'+targetDiv).children().is('.userTask'));
+    
     //if target element is a text area save it and convert to p
     if ($('#'+targetDiv).children().is('.userTask')){
         $('#'+targetDiv).html('<p>'+ targetText +'</p>');
@@ -110,4 +130,5 @@ $(".container").on("click",'.col-10',  function() {
 
 colorRows();
 updateDay();
+loadTasks()
 
