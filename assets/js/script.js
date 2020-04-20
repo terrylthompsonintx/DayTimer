@@ -5,40 +5,16 @@
 //on load put date on jumbotron
 // set interval to check time.  Color blocks that in the past grey.  Color future blocks gree,  Color actve red. 
 
-
+//global variables
 var tasks =[];
 var today = '';
-var dayStart =8;
+var dayStart =8;  //adjust for different time
 var dayStop =17;
 
-var loadTasks = function(){
-    var tempdata =JSON.parse(localStorage.getItem('tasks'));
-    
-    if (tempdata !== null){
-        
-        tasks = tempdata.slice();
-        
-        for (i=0;i<tasks.length;i++){
-           //load tasks into page
-            
-        }
-    }
-}
-var saveTasks = function(time,ttext) {
-    var taskTime = time;
-    var taskText = ttext;
-    var newItem ={
-        time: taskTime,
-        tasks:taskText
-    }
-    tasks.push(newItem);
-    console.log (tasks);
-
-    localStorage.setItem('tasks',JSON.stringify(tasks));
-
-}
 
 
+
+//functions begin
 
 var updateDay = function(){
     var today = moment().format("dddd MMMM Do gggg"); 
@@ -78,40 +54,50 @@ var colorRows = function(){
 }
 
 var loadTasks = function(){
-    
-    var tasks =JSON.parse(localStorage.getItem('tasks'));
+    tasks =[];
+    var tasks =JSON.parse(localStorage.getItem('taskstore'));
+    //console.log (tasks);
     if (tasks !== null){
         //console.log('tasks', tasks)
         for (x=0;x<tasks.length;x++){
             
-            storedTime = tasks[x].time;
-            storedTask = tasks[x].tasks;
-            
+            var storedTime = tasks[x].time;
+            var storedTask = tasks[x].tasker;
+            //console.log ('load task', tasks);
+
 
             $('#'+storedTime).children('.oldTask').append(storedTask);
 
         }
     }
 }
-
-
+//functions end
 setInterval(function() {
     colorRows();
   }, (1000 * 60) * 30);
 
+  //eventlisteners begin
 $('.saveBtn').on('click', function(){
-    //replace text area with p containing text area
 
-    //save to tasks array 
-    //save to local storage
+    event.preventDefault();
     var targetDiv =$(this).parent().children('.col-10').attr('id');
     var targetText =$('#'+targetDiv).children('.userTask').val();
     
     //if target element is a text area save it and convert to p
     if ($('#'+targetDiv).children().is('.userTask')){
-        $('#'+targetDiv).html('<p>'+ targetText +'</p>');
-        saveTasks(targetDiv,targetText);
-    console.log(tasks);
+        $('#'+targetDiv).html('<p class = "oldTask">'+ targetText +'</p>');
+
+        //saveTasks(targetDiv,targetText);
+        
+        var newItem ={
+            time: targetDiv,
+            tasker: targetText
+        }
+        console.log(tasks);
+        tasks.push(newItem);
+
+        localStorage.setItem('taskstore',JSON.stringify(tasks));
+    
     }
     else {
         alert('No changes to save.')
@@ -120,13 +106,16 @@ $('.saveBtn').on('click', function(){
 })
 
 $(".container").on("click",'.col-10',  function() {
-    
-    var oldtask = $(this).children('p').text();
-    var textH = "<textarea  class ='userTask' rows='4' cols='50'>" + oldtask + "</textarea>";
+    event.preventDefault();
+    var oldtask = $(this).children('.oldTask').text();
+    //console.log(oldtask);
+    var textH = "<textarea  class ='userTask' rows='3' cols='50'>" + oldtask + "</textarea>";
     $(this).html(textH);
     $(this).find('.userTask').focus();
   
   });
+
+  //eventlisteners end
 
 colorRows();
 updateDay();
