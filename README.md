@@ -1,4 +1,5 @@
-##
+# Workday Planner
+#### Acceptance Criteria
 
 GIVEN I am using a daily planner to create a schedule
 WHEN I open the planner
@@ -13,3 +14,8 @@ WHEN I click the save button for that time block
 THEN the text for that event is saved in local storage
 WHEN I refresh the page
 THEN the saved events persist
+
+## Edit the local variables dayStart and  dayStop to adjust working time.   These varaibles use a 24 hour clock.
+
+## Screen layout
+![Image of screen layout](https://github.com/terrylthompsonintx/DayTimer/blob/master/assets/img/pic.png "Screen Cap")
